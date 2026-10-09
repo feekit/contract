@@ -1,0 +1,22 @@
+[workspace]
+members = ["programs/*"]
+resolver = "2"
+
+# Cargo.lock pins:
+# - proc-macro2 1.0.94, because Anchor 0.30.1's IDL build calls Span::source_file().
+# - blake3, indexmap, jobserver, proc-macro-crate, and zeroize_derive below the
+#   releases that need Cargo edition 2024. `cargo build-sbf` still uses Cargo 1.84.
+
+[profile.release]
+overflow-checks = true
+# Fat LTO inlines account validation into one frame and blows the 4KB SBF stack.
+lto = false
+codegen-units = 1
+
+[profile.release.build-override]
+opt-level = 3
+incremental = false
+codegen-units = 1
+
+[profile.dev]
+overflow-checks = true
